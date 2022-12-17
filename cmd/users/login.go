@@ -80,15 +80,18 @@ func Login(email, password string) (*User, error) {
 }
 
 // ログインチェック
-func CheckLogin(r *http.Request) bool {
+func CheckLogin(r *http.Request) (bool, error) {
 
 	// CookieKey取得
 	cookieKey := os.Getenv("FOOTBALL_REDIS_COOKIE")
 	// ログインチェック
-	id := util.GetSession(r, cookieKey)
-	if id == nil {
-		return false // 未ログイン
+	id, err := util.GetSession(r, cookieKey)
+	if err != nil {
+		return false, err
+	}
+	if id == "" {
+		return false, nil // 未ログイン
 	} else {
-		return true // ログイン中
+		return true, nil // ログイン中
 	}
 }

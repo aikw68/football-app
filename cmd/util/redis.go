@@ -43,20 +43,20 @@ func NewSession(w http.ResponseWriter, r *http.Request, redisValue string, cooki
 }
 
 // ログインセッション取得
-func GetSession(r *http.Request, cookieKey string) interface{} {
+func GetSession(r *http.Request, cookieKey string) (string, error) {
 
 	redisKey, _ := r.Cookie(cookieKey)
 	if redisKey == nil {
-		return nil
+		return "", errors.WithStack(ERR_SESSION_GET_FAILED)
 	} else {
 		redisValue, err := conn.Get(r.Context(), redisKey.Value).Result()
 		switch {
 		case err == redis.Nil:
-			return errors.WithStack(ERR_SESSION_KEY_UNREGISTERED)
+			return "", errors.WithStack(ERR_SESSION_KEY_UNREGISTERED)
 		case err != nil:
-			return errors.WithStack(ERR_SESSION_GET_FAILED)
+			return "", errors.WithStack(ERR_SESSION_GET_FAILED)
 		}
-		return redisValue
+		return redisValue, nil
 	}
 }
 

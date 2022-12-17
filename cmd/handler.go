@@ -26,9 +26,14 @@ func index(w http.ResponseWriter, r *http.Request) {
 		notFoundHandler(w, r.URL.Path)
 		return
 	}
+	p, err := match.GetMatchData(r, false)
+	if err != nil {
+		systemServerErrorHandler(w, err)
+		return
+	}
 
 	// レンダリング実行
-	renderTemplate(w, "index", match.GetMatchData(r, false))
+	renderTemplate(w, "index", p)
 }
 
 // 利用規約画面表示
@@ -41,7 +46,11 @@ func terms(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ログインチェック
-	loginFlg := users.CheckLogin(r)
+	loginFlg, err := users.CheckLogin(r)
+	if err != nil {
+		systemServerErrorHandler(w, err)
+		return
+	}
 
 	// レンダリング実行
 	p := match.Page{Title: SITE_TITLE, SubTitle: "ユーザー登録", LoginFlg: loginFlg}
@@ -58,7 +67,11 @@ func privacy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ログインチェック
-	loginFlg := users.CheckLogin(r)
+	loginFlg, err := users.CheckLogin(r)
+	if err != nil {
+		systemServerErrorHandler(w, err)
+		return
+	}
 
 	// レンダリング実行
 	p := match.Page{Title: SITE_TITLE, SubTitle: "プライバシーポリシー", LoginFlg: loginFlg}
@@ -99,8 +112,15 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 		cookieKey := os.Getenv("FOOTBALL_REDIS_COOKIE_KEY")
 		// ログインセッション&Cookie生成
 		util.NewSession(w, r, r.FormValue("email"), cookieKey)
-		// ユーザー登録完了画面に遷移
-		renderTemplate(w, "index", match.GetMatchData(r, true))
+
+		p, err := match.GetMatchData(r, true)
+		if err != nil {
+			systemServerErrorHandler(w, err)
+			return
+		}
+
+		// トップページに遷移
+		renderTemplate(w, "index", p)
 	}
 }
 
@@ -141,8 +161,15 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		cookieKey := os.Getenv("FOOTBALL_REDIS_COOKIE_KEY")
 		// ログインセッション&Cookie生成
 		util.NewSession(w, r, email, cookieKey)
+
+		p, err := match.GetMatchData(r, true)
+		if err != nil {
+			systemServerErrorHandler(w, err)
+			return
+		}
+
 		// トップページに遷移
-		renderTemplate(w, "index", match.GetMatchData(r, true))
+		renderTemplate(w, "index", p)
 	}
 }
 
@@ -162,7 +189,11 @@ func getReset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ログインチェック
-	loginFlg := users.CheckLogin(r)
+	loginFlg, err := users.CheckLogin(r)
+	if err != nil {
+		systemServerErrorHandler(w, err)
+		return
+	}
 
 	// レンダリング実行
 	p := match.Page{Title: SITE_TITLE, SubTitle: "パスワードリセット", LoginFlg: loginFlg}
@@ -217,6 +248,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p match.Page) {
 
 			// "broken pipe"エラー以外の場合(500内部サーバーエラー)
 			systemServerErrorHandler(w, err)
+			return
 		}
 	}
 }

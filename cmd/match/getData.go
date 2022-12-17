@@ -28,7 +28,7 @@ func (p Page) MarshalBinary() ([]byte, error) {
 }
 
 // 試合データ取得
-func GetMatchData(r *http.Request, fstLoginFlg bool) Page {
+func GetMatchData(r *http.Request, fstLoginFlg bool) (Page, error) {
 
 	// ログインチェック
 	var loginFlg bool
@@ -37,7 +37,10 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) Page {
 		loginFlg = true
 	} else {
 		//　ログインチェック
-		loginFlg = users.CheckLogin(r)
+		_, err := users.CheckLogin(r)
+		if err != nil {
+			return Page{}, err
+		}
 	}
 
 	// キャッシュ有無チェック
@@ -58,7 +61,7 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) Page {
 
 		p := Page{Title, Blunk, loginFlg, c1, c2, c3, ""}
 
-		return p
+		return p, nil
 
 	} else {
 
@@ -81,7 +84,7 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) Page {
 		cacheKey := os.Getenv("FOOTBALL_REDIS_CACHE_KEY")
 		util.NewMatchDataCache(r, cacheKey, p)
 
-		return p
+		return p, nil
 	}
 }
 
