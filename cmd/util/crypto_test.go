@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,6 +19,5 @@ func TestCrypto_Normal(t *testing.T) {
 func TestCrypto_Abnormal(t *testing.T) {
 	hash, _ := PasswordEncrypt("test")
 	actual := CompareHashAndPassword(hash, "test2")
-	fmt.Println(actual)
 	assert.Equal(t, "crypto/bcrypt: hashedPassword is not the hash of the given password", actual.Error())
 }
