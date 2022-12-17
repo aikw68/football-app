@@ -1,0 +1,122 @@
+{{template "header" .}}
+    <body>
+        <!-- Header-->
+        <header >
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">{{ .Title}}</h1>
+                <p class="lead">サッカー（イングランド・プレミアリーグ）の試合情報を発信中</sakka-></p>
+                <a class="btn btn-md btn-success" href="#schedule">試合日程</a>
+                <a class="btn btn-md btn-success" href="#standings">順位表</a>
+                <a class="btn btn-md btn-success" href="#scorers">得点ランキング</a>
+            </div>
+        </header>
+        <div class="text-center">
+            <a class="btn btn-md btn-success" href="#schedule">プレミアリーグ</a>
+            <a class="btn btn-md btn-success" href="#standings">ラ・リーガ</a>
+            <a class="btn btn-md btn-success" href="#scorers">セリエA</a>
+            <a class="btn btn-md btn-success" href="#scorers">ブンデスリーガ</a>
+        </div>
+        <!-- schedule section-->
+        <section id="schedule">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2>イングランド・プレミアリーグ{{(index .MatchList 0).StartDate}}-{{(index .MatchList 0).EndDate}}シーズン 第{{(index .MatchList 0).CurrentMatchday}}節 試合日程</h2>
+                        <!-- Core plugin JavaScript -->
+                        <script src="assets/js/jquery-3.6.0.min.js"></script>
+                        <table >
+                            <thead>
+                                <tr align="center">
+                                    <th width="40%">ホーム</th>
+                                    <th width="20%">試合開始日時(日本時間)</th>
+                                    <th width="40%">アウェイ</th>
+                                </tr>
+                            </thead>
+                            {{ range .MatchList }}
+                            {{ if eq .CurrentMatchday .Matchday}}
+                            <tbody>
+                                <tr align="center">
+                                    <td width="40%"><img src="https://crests.football-data.org/{{.HomeTeamId}}.svg" height="50"></br>{{.HomeTeamName}}</td>
+                                    <td width="20%"><div class="text-center">{{.Month}}/{{.Day}}({{.WDays}})</div><div class="text-center">{{.StartTime}}</div><p class="fw-bolder fs-1">{{.HomeScore}} - {{.AwayScore}}</p></td>
+                                   <td width="40%"><img src="https://crests.football-data.org/{{.AwayTeamId}}.svg" height="50"></br>{{.AwayTeamName}}</td>
+                                </tr>
+                            </tbody>
+                            {{ end }}
+                            {{ end }}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- standings section-->
+        <section id="standings">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2>イングランド・プレミアリーグ{{(index .MatchList 0).StartDate}}-{{(index .MatchList 0).EndDate}}シーズン 順位表</h2>
+                        <table>
+                            <thead>
+                                <tr align="left">
+                                    <th width="10%">順位</th>
+                                    <th width="40%">チーム名</th>
+                                    <th width="10%">試合数</th>
+                                    <th width="10%">勝</th>
+                                    <th width="10%">引</th>
+                                    <th width="10%">負</th>
+                                    <th width="10%">Pts</th>
+                                </tr>
+                            </thead>
+                            {{ range .StandingsList }}
+                            <tbody>
+                                <tr align="left">
+                                    <th width="10%">{{ .Position}}</th>
+                                    <th width="40%"><img src="https://crests.football-data.org/{{.TeamId}}.svg" height="20">　{{ .TeamName}}</th>
+                                    <th width="10%">{{ .PlayedGames}}</th>
+                                    <th width="10%">{{ .Won}}</th>
+                                    <th width="10%">{{ .Draw}}</th>
+                                    <th width="10%">{{ .Lost}}</th>
+                                    <th width="10%">{{ .Points}}</th>
+                                </tr>
+                            </tbody>
+                            {{ end }}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- scorers section-->
+        <section id="scorers">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2>イングランド・プレミアリーグ{{(index .MatchList 0).StartDate}}-{{(index .MatchList 0).EndDate}}シーズン 得点ランキング</h2>
+                        <table>
+                            <thead>
+                                <tr align="left">
+                                    <th width="10%">順位</th>
+                                    <th width="25%">選手名</th>
+                                    <th width="25%">国籍</th>
+                                    <th width="30%">所属チーム名</th>
+                                    <th width="10%">ゴール数</th>
+                                </tr>
+                            </thead>
+                            {{ range .ScoreList }}
+                            <tbody>
+                                <tr align="left">
+                                    <th width="10%">{{.Standings}}</th>
+                                    <th width="25%">{{.PlayerName}}</th>
+                                    <th width="25%">{{.Nationality}}</th>
+                                    <th width="30%"><img src="https://crests.football-data.org/{{.TeamId}}.svg" height="20">　{{ .TeamName}}</th>
+                                    <th width="10%">{{.Goals}}</th>
+                                </tr>
+                            </tbody>
+                            {{ end }}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container mb-4 text-center">
+            <a class="btn btn-sm btn-success" href="#page-top">ページトップに戻る</a>
+        </div>
+{{template "footer" .}}

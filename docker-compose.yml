@@ -1,0 +1,73 @@
+version: "3"
+
+services:
+  db:
+    container_name: football-db
+    image: mysql:8.0
+    ports: 
+      - 3306:3306
+    networks:
+      - footballnet
+    hostname: football-dbserver
+    volumes:
+      - football_db_volume:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      LOGIN_USER_ID_KEY: '${LOGIN_USER_ID_KEY}'
+
+  app: 
+    container_name: football-app
+    depends_on:
+      - db
+      - redis
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - footballnet
+    hostname: football-appserver
+    ports:
+      - 8080:8080
+    restart: always
+    environment:
+      FOOTBALL_DB_HOST: '${FOOTBALL_DB_HOST}'
+      FOOTBALL_DB_NAME: '${FOOTBALL_DB_NAME}'
+      FOOTBALL_DB_USER: '${FOOTBALL_DB_USER}'
+      FOOTBALL_DB_PASSWORD: '${FOOTBALL_DB_PASSWORD}'
+      FOOTBALL_REDIS_COOKIE_KEY: '${FOOTBALL_REDIS_COOKIE_KEY}'
+      FOOTBALL_REDIS_CACHE_KEY: '${FOOTBALL_REDIS_CACHE_KEY}'
+      AWS_ACCESS_KEY_ID: '${AWS_ACCESS_KEY_ID}'
+      AWS_SECRET_ACCESS_KEY: '${AWS_SECRET_ACCESS_KEY}'
+      AWS_DEFAULT_REGION: '${AWS_DEFAULT_REGION}'
+    tty: true
+
+  redis: 
+    container_name: football-redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - footballnet
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    logging:
+      driver: json-file
+      options:
+        max-file: '1'
+        max-size: 1m
+    networks:
+      - footballnet
+
+networks:
+  footballnet:
+
+volumes:
+  football_db_volume:
