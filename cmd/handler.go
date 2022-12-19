@@ -26,13 +26,15 @@ func index(w http.ResponseWriter, r *http.Request) {
 		notFoundHandler(w, r.URL.Path)
 		return
 	}
+
+	//　試合データ取得
 	p, err := match.GetMatchData(r, false)
 	if err != nil {
 		systemServerErrorHandler(w, err)
 		return
 	}
 
-	// レンダリング実行
+	// 画面レンダリング
 	renderTemplate(w, "index", p)
 }
 
@@ -52,7 +54,7 @@ func terms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// レンダリング実行
+	// 画面レンダリング
 	p := match.Page{Title: SITE_TITLE, SubTitle: "ユーザー登録", LoginFlg: loginFlg}
 	renderTemplate(w, "terms", p)
 }
@@ -73,7 +75,7 @@ func privacy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// レンダリング実行
+	// 画面レンダリング
 	p := match.Page{Title: SITE_TITLE, SubTitle: "プライバシーポリシー", LoginFlg: loginFlg}
 	renderTemplate(w, "privacy", p)
 }
@@ -87,7 +89,7 @@ func getSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// レンダリング実行
+	// 画面レンダリング
 	p := match.Page{Title: SITE_TITLE, SubTitle: "ユーザー登録"}
 	renderTemplate(w, "signup", p)
 }
@@ -95,13 +97,12 @@ func getSignup(w http.ResponseWriter, r *http.Request) {
 // サインアップ処理
 func postSignup(w http.ResponseWriter, r *http.Request) {
 
-	//　サインアップ処理実行
+	// サインアップ処理
 	if _, err := users.Signup(r); err != nil {
 
 		// サインアップに失敗した場合
-		log.Println("サインアップに失敗")
-		log.Println(err)
-		// レンダリング実行（サインアップ画面にエラーメッセージを返す）
+		// 画面レンダリング（サインアップ画面にエラーメッセージを返す）
+		log.Println(err.Error())
 		p := match.Page{Title: SITE_TITLE, SubTitle: "ユーザー登録", Message: err.Error()}
 		renderTemplate(w, "signup", p)
 
@@ -113,6 +114,7 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 		// ログインセッション&Cookie生成
 		util.NewSession(w, r, r.FormValue("email"), cookieKey)
 
+		// 試合データ取得
 		p, err := match.GetMatchData(r, true)
 		if err != nil {
 			systemServerErrorHandler(w, err)
@@ -133,7 +135,7 @@ func getLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// レンダリング実行
+	// 画面レンダリング
 	p := match.Page{Title: SITE_TITLE, SubTitle: "ログイン"}
 	renderTemplate(w, "login", p)
 }
@@ -149,8 +151,8 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 	if _, err := users.Login(email, password); err != nil {
 
 		// ログインに失敗した場合
+		// 画面レンダリング（ログイン画面にエラーメッセージを返す）
 		log.Println(err.Error())
-		// レンダリング実行（ログイン画面にエラーメッセージを返す）
 		p := match.Page{Title: SITE_TITLE, SubTitle: "ログイン", Message: err.Error()}
 		renderTemplate(w, "login", p)
 
@@ -162,6 +164,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		// ログインセッション&Cookie生成
 		util.NewSession(w, r, email, cookieKey)
 
+		// 試合データ取得
 		p, err := match.GetMatchData(r, true)
 		if err != nil {
 			systemServerErrorHandler(w, err)
@@ -179,6 +182,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+// 作成中
 // パスワードリセット画面
 func getReset(w http.ResponseWriter, r *http.Request) {
 
@@ -195,11 +199,12 @@ func getReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// レンダリング実行
+	// 画面レンダリング
 	p := match.Page{Title: SITE_TITLE, SubTitle: "パスワードリセット", LoginFlg: loginFlg}
 	renderTemplate(w, "reset", p)
 }
 
+// 作成中
 // パスワードリセット処理（メール送信）
 func postReset(w http.ResponseWriter, r *http.Request) {
 
@@ -209,7 +214,7 @@ func postReset(w http.ResponseWriter, r *http.Request) {
 	// メールアドレスチェック
 	if _, err := users.CheckMail(email); err != nil {
 
-		// レンダリング実行（パスワードリセット画面にエラーメッセージを返す）
+		// 画面レンダリング（パスワードリセット画面にエラーメッセージを返す）
 		p := match.Page{Title: SITE_TITLE, SubTitle: "パスワードリセット", Message: err.Error()}
 		renderTemplate(w, "reset", p)
 
@@ -230,7 +235,7 @@ func postReset(w http.ResponseWriter, r *http.Request) {
 // GoogleChrome 二重送信防止用
 func faviconHandler(w http.ResponseWriter, r *http.Request) {}
 
-// レンダリング処理
+// 画面レンダリング処理
 func renderTemplate(w http.ResponseWriter, tmpl string, p match.Page) {
 	t := template.Must(template.ParseFiles(
 		"../assets/"+tmpl+".html",
@@ -256,7 +261,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p match.Page) {
 // 404NotFound発生時
 func notFoundHandler(w http.ResponseWriter, url string) {
 
-	// レンダリング実行(404 Not Found)
+	// 画面レンダリング(404 Not Found)
 	log.Printf("%s:入力されたURL=%s", util.ERR_404_NOT_FOUND, url)
 	p := match.Page{Title: SITE_TITLE, SubTitle: "404 Not Found"}
 	renderTemplate(w, "404", p)
@@ -265,7 +270,7 @@ func notFoundHandler(w http.ResponseWriter, url string) {
 // 500内部サーバーエラー発生時
 func systemServerErrorHandler(w http.ResponseWriter, e error) {
 
-	// レンダリング実行(500 Internal Server Error)
+	// 画面レンダリング(500 Internal Server Error)
 	log.Println(e.Error())
 	p := match.Page{Title: SITE_TITLE, SubTitle: "500 Internal Server Error"}
 	renderTemplate(w, "error", p)
