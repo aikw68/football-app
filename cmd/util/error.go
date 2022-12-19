@@ -22,6 +22,7 @@ var AppErrCodeMessages = map[AppErr]string{
 	ERR_SESSION_KEY_GENERATE_FAILED:    "Sessionキー生成時にエラーが発生しました。",
 	ERR_SESSION_KEY_UNREGISTERED:       "Sessionキーが登録されていません。",
 	ERR_SESSION_REGISTRATION_FAILED:    "Session登録時にエラーが発生しました。",
+	ERR_SESSION_EXTEND_FAILED:          "Session有効期限延長時にエラーが発生しました。",
 	ERR_SESSION_GET_FAILED:             "Session取得時にエラーが発生しました。",
 	ERR_CACHE_REGISTRATION_FAILED:      "Cache登録時にエラーが発生しました。",
 	ERR_CACHE_GET_FAILED:               "Cache取得時にエラーが発生しました。",
@@ -41,6 +42,7 @@ const (
 	ERR_SESSION_KEY_GENERATE_FAILED    AppErr = "ERR_SESSION_KEY_GENERATE_FAILED"
 	ERR_SESSION_KEY_UNREGISTERED       AppErr = "ERR_SESSION_UNREGISTERED"
 	ERR_SESSION_REGISTRATION_FAILED    AppErr = "ERR_SESSION_REGISTRATION_FAILED"
+	ERR_SESSION_EXTEND_FAILED          AppErr = "ERR_SESSION_EXTEND_FAILED"
 	ERR_SESSION_GET_FAILED             AppErr = "ERR_SESSION_GET_FAILED"
 	ERR_CACHE_REGISTRATION_FAILED      AppErr = "ERR_CACHE_REGISTRATION_FAILED"
 	ERR_CACHE_GET_FAILED               AppErr = "ERR_CACHE_GET_FAILED"

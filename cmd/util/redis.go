@@ -11,6 +11,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+const SESSION_LIFETIME = 30 * time.Minute
+
 var conn *redis.Client
 
 func init() {
@@ -23,13 +25,15 @@ func init() {
 
 // ログインセッション&Cookie生成
 func NewSession(w http.ResponseWriter, r *http.Request, redisValue string, cookieKey string) error {
+
 	b := make([]byte, 64)
 	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		return errors.WithStack(ERR_SESSION_KEY_GENERATE_FAILED)
 	}
 	newRedisKey := base64.URLEncoding.EncodeToString(b)
 
-	if err := conn.Set(r.Context(), newRedisKey, redisValue, 0).Err(); err != nil {
+	// セッション生成
+	if err := conn.Set(r.Context(), newRedisKey, redisValue, SESSION_LIFETIME).Err(); err != nil {
 		return errors.WithStack(ERR_SESSION_REGISTRATION_FAILED)
 	}
 	// Cookie生成
@@ -47,12 +51,12 @@ func GetSession(r *http.Request, cookieKey string) (string, error) {
 
 	redisKey, _ := r.Cookie(cookieKey)
 	if redisKey == nil {
-		return "", errors.WithStack(ERR_SESSION_GET_FAILED)
+		return "", nil
 	} else {
 		redisValue, err := conn.Get(r.Context(), redisKey.Value).Result()
 		switch {
 		case err == redis.Nil:
-			return "", errors.WithStack(ERR_SESSION_KEY_UNREGISTERED)
+			return "", nil
 		case err != nil:
 			return "", errors.WithStack(ERR_SESSION_GET_FAILED)
 		}
@@ -60,13 +64,22 @@ func GetSession(r *http.Request, cookieKey string) (string, error) {
 	}
 }
 
+// ログインセッションの有効期限延長
+func ExtendSession(r *http.Request, cookieKey string) error {
+
+	redisKey, _ := r.Cookie(cookieKey)
+	if err := conn.Expire(r.Context(), redisKey.Value, SESSION_LIFETIME).Err(); err != nil {
+		return errors.WithStack(ERR_SESSION_EXTEND_FAILED)
+	}
+	return nil
+}
+
 // ログインセッション&Cookie削除
 func DeleteSession(w http.ResponseWriter, r *http.Request, cookieKey string) {
-	redisKey, _ := r.Cookie(cookieKey)
 
+	redisKey, _ := r.Cookie(cookieKey)
 	// セッション削除
 	conn.Del(r.Context(), redisKey.Value)
-
 	// Cookie削除
 	redisKey.MaxAge = -1
 	http.SetCookie(w, redisKey)
@@ -95,6 +108,3 @@ func GetMatchDataCacher(r *http.Request, cacheKey string) []byte {
 	byteConvValue := []byte(redisValue)
 	return byteConvValue //,nil
 }
-
-// 試合データのセッション削除
-// なし
