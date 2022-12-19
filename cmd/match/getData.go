@@ -20,8 +20,10 @@ type Page struct {
 	Message       string
 }
 
-var Title string = "DUELSCORE"
-var Blunk string = ""
+const (
+	SITE_TITLE string = "DUELSCORE"
+	BLUNK      string = ""
+)
 
 func (p Page) MarshalBinary() ([]byte, error) {
 	return json.Marshal(p)
@@ -37,10 +39,11 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) (Page, error) {
 		loginFlg = true
 	} else {
 		//　ログインチェック
-		_, err := users.CheckLogin(r)
+		rtn, err := users.CheckLogin(r)
 		if err != nil {
 			return Page{}, err
 		}
+		loginFlg = rtn
 	}
 
 	// キャッシュ有無チェック
@@ -59,7 +62,7 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) (Page, error) {
 		c2 := cachePage.ScoreList
 		c3 := cachePage.StandingsList
 
-		p := Page{Title, Blunk, loginFlg, c1, c2, c3, ""}
+		p := Page{SITE_TITLE, BLUNK, loginFlg, c1, c2, c3, ""}
 
 		return p, nil
 
@@ -78,7 +81,7 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) (Page, error) {
 		go Standings(c3)
 
 		//　取得結果を一つにまとめる
-		p := Page{Title, Blunk, loginFlg, <-c1, <-c2, <-c3, ""}
+		p := Page{SITE_TITLE, BLUNK, loginFlg, <-c1, <-c2, <-c3, ""}
 
 		// キャッシュ保存
 		cacheKey := os.Getenv("FOOTBALL_REDIS_CACHE_KEY")
