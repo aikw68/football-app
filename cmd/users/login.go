@@ -87,11 +87,14 @@ func CheckLogin(r *http.Request) (bool, error) {
 	// ログインチェック
 	id, err := util.GetSession(r, cookieKey)
 	if err != nil {
-		return false, err
+		return false, err // 未ログインかつセッション取得時エラー
 	}
 	if id == "" {
 		return false, nil // 未ログイン
-	} else {
-		return true, nil // ログイン中
 	}
+	err = util.ExtendSession(r, cookieKey)
+	if err != nil {
+		return false, err //　未ログインかつセッション延長時エラー
+	}
+	return true, nil // ログイン中
 }
