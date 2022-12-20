@@ -36,7 +36,10 @@ func GetSecret(param string) (map[string]interface{}, error) {
 	var secretString string = *result.SecretString
 
 	res := make(map[string]interface{})
-	json.Unmarshal([]byte(secretString), &res)
+	err = json.Unmarshal([]byte(secretString), &res)
+	if err != nil {
+		return nil, errors.WithStack(ERR_USER_SYSTEM_ERROR)
+	}
 
 	return res, nil
 }

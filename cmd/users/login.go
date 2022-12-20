@@ -19,8 +19,8 @@ func Signup(r *http.Request) (*User, error) {
 
 	user := User{}
 
-	if rtn := Validation(r); rtn != "" {
-		return nil, rtn
+	if validateResult := Validation(r); validateResult != "" {
+		return nil, validateResult
 	}
 
 	// ユーザー入力パラメータ（メールアドレス、パスワード）
@@ -34,7 +34,10 @@ func Signup(r *http.Request) (*User, error) {
 	}
 
 	// DBマイグレーション
-	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
+	query := db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
+	if query.Error() != "nil" {
+		return nil, util.ERR_USER_SYSTEM_ERROR
+	}
 
 	// メールアドレス二重登録チェック
 	db.Where("email = ?", email).First(&user)
