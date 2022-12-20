@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +20,7 @@ func Signup(r *http.Request) (*User, error) {
 
 	user := User{}
 
-	if validateResult := Validation(r); validateResult != "" {
+	if validateResult := Validation(r); validateResult != nil {
 		return nil, validateResult
 	}
 
@@ -36,7 +37,7 @@ func Signup(r *http.Request) (*User, error) {
 	// DBマイグレーション
 	query := db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
 	if query.Error() != "nil" {
-		return nil, util.ERR_USER_SYSTEM_ERROR
+		return nil, errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
 	}
 
 	// メールアドレス二重登録チェック

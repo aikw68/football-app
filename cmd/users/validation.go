@@ -6,6 +6,7 @@ import (
 	"regexp"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 type UserInputParam struct {
@@ -15,20 +16,32 @@ type UserInputParam struct {
 
 var validate *validator.Validate
 
-func Validation(r *http.Request) util.AppErr {
+func Validation(r *http.Request) error {
 
 	validate = validator.New()
-	validate.RegisterValidation("custom-email", customValidationEmail)
-	validate.RegisterValidation("custom-lowercase", includeLowercase)
-	validate.RegisterValidation("custom-uppercase", includeUppercase)
-	validate.RegisterValidation("custom-numeric", includeNumeric)
+	err := validate.RegisterValidation("custom-email", customValidationEmail)
+	if err != nil {
+		return errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
+	}
+	err = validate.RegisterValidation("custom-lowercase", includeLowercase)
+	if err != nil {
+		return errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
+	}
+	err = validate.RegisterValidation("custom-uppercase", includeUppercase)
+	if err != nil {
+		return errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
+	}
+	err = validate.RegisterValidation("custom-numeric", includeNumeric)
+	if err != nil {
+		return errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
+	}
 
 	uip := &UserInputParam{
 		r.FormValue("email"),
 		r.FormValue("password")}
 
 	var result util.AppErr
-	err := validate.Struct(*uip)
+	err = validate.Struct(*uip)
 	if err != nil {
 		errors := err.(validator.ValidationErrors)
 		if len(errors) != 0 {
