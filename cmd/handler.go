@@ -178,7 +178,11 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 
 // ログアウト処理
 func logout(w http.ResponseWriter, r *http.Request) {
-	users.Logout(w, r)
+
+	if err := users.Logout(w, r); err != nil {
+		systemServerErrorHandler(w, err)
+		return
+	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 

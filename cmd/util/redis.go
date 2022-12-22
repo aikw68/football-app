@@ -75,14 +75,17 @@ func ExtendSession(r *http.Request, cookieKey string) error {
 }
 
 // ログインセッション&Cookie削除
-func DeleteSession(w http.ResponseWriter, r *http.Request, cookieKey string) {
+func DeleteSession(w http.ResponseWriter, r *http.Request, cookieKey string) error {
 
 	redisKey, _ := r.Cookie(cookieKey)
 	// セッション削除
-	conn.Del(r.Context(), redisKey.Value)
+	if err := conn.Del(r.Context(), redisKey.Value).Err(); err != nil {
+		return errors.WithStack(ERR_SESSION_DELETE_FAILED)
+	}
 	// Cookie削除
 	redisKey.MaxAge = -1
 	http.SetCookie(w, redisKey)
+	return nil
 }
 
 // 試合データのキャッシュ生成
