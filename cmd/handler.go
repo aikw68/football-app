@@ -112,7 +112,11 @@ func postSignup(w http.ResponseWriter, r *http.Request) {
 		// CookieKey取得
 		cookieKey := os.Getenv("FOOTBALL_REDIS_COOKIE_KEY")
 		// ログインセッション&Cookie生成
-		util.NewSession(w, r, r.FormValue("email"), cookieKey)
+		err := util.NewSession(w, r, r.FormValue("email"), cookieKey)
+		if err != nil {
+			systemServerErrorHandler(w, err)
+			return
+		}
 
 		// 試合データ取得
 		p, err := match.GetMatchData(r, true)
@@ -162,7 +166,11 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		// CookieKey取得
 		cookieKey := os.Getenv("FOOTBALL_REDIS_COOKIE_KEY")
 		// ログインセッション&Cookie生成
-		util.NewSession(w, r, email, cookieKey)
+		err := util.NewSession(w, r, email, cookieKey)
+		if err != nil {
+			systemServerErrorHandler(w, err)
+			return
+		}
 
 		// 試合データ取得
 		p, err := match.GetMatchData(r, true)

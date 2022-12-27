@@ -85,7 +85,10 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) (Page, error) {
 
 		// キャッシュ保存
 		cacheKey := os.Getenv("FOOTBALL_REDIS_CACHE_KEY")
-		util.NewMatchDataCache(r, cacheKey, p)
+		err := util.NewMatchDataCache(r, cacheKey, p)
+		if err != nil {
+			return Page{}, err
+		}
 
 		return p, nil
 	}
