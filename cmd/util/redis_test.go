@@ -291,7 +291,7 @@ func TestNewMatchDataCache_Abnormal(t *testing.T) {
 
 }
 
-// 正常系
+// 正常系（作成中）
 func TestGetMatchDataCacher_Normal(t *testing.T) {
 
 	// miniredis初期化
