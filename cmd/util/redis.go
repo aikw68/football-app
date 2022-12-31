@@ -89,25 +89,26 @@ func DeleteSession(w http.ResponseWriter, r *http.Request, cookieKey string) err
 }
 
 // 試合データのキャッシュ生成
-func NewMatchDataCache(r *http.Request, cacheKey string, redisValue interface{}) {
+func NewMatchDataCache(r *http.Request, cacheKey string, redisValue interface{}) error {
 
 	if err := conn.Set(r.Context(), cacheKey, redisValue, 60*time.Second).Err(); err != nil {
-		panic("Session登録時にエラーが発生：" + err.Error())
+		return errors.WithStack(ERR_SESSION_REGISTRATION_FAILED)
 	}
+	return nil
 }
 
 // 試合データのキャッシュ取得
-func GetMatchDataCacher(r *http.Request, cacheKey string) []byte {
+func GetMatchDataCache(r *http.Request, cacheKey string) ([]byte, error) {
 
 	redisValue, err := conn.Get(r.Context(), cacheKey).Result()
 	switch {
 	case err == redis.Nil:
-		// キャッシュ無し（生成する）
-		return nil
+		// キャッシュ無し
+		return nil, nil
 	case err != nil:
 		// キャッシュ取得時にエラー発生
-		return nil //,errors.WithStack(ERR_CACHE_GET_FAILED)
+		return nil, errors.WithStack(ERR_CACHE_GET_FAILED)
 	}
 	byteConvValue := []byte(redisValue)
-	return byteConvValue //,nil
+	return byteConvValue, nil
 }
