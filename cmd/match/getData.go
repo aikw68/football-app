@@ -46,9 +46,12 @@ func GetMatchData(r *http.Request, fstLoginFlg bool) (Page, error) {
 		loginFlg = rtn
 	}
 
-	// キャッシュ有無チェック
+	// キャッシュ取得
 	cacheKey := os.Getenv("FOOTBALL_REDIS_CACHE_KEY")
-	cache := util.GetMatchDataCacher(r, cacheKey)
+	cache, err := util.GetMatchDataCache(r, cacheKey)
+	if err != nil {
+		return Page{}, err
+	}
 
 	if cache != nil {
 
