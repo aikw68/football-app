@@ -1,13 +1,15 @@
 ## ポートフォリオ概要
 - DUELSCORE
-    - 海外サッカー試合情報サイト（試合日程、得点ランキング、順位表）
-    - 試合情報はAPI（[football-data.org](https://www.football-data.org/)）を使い取得
+    - 海外サッカー試合情報サイト（試合日程、試合スコア、得点ランキング、順位表）
+    - 情報はAPI（[football-data.org](https://www.football-data.org/)）を使い取得
 
 ## URL
-※作成中
+※準備中..
+
+※README下部にポートフォリオのスクリーンショットを掲載中
 
 ## テストアカウント
-※作成中
+※準備中..
 
 ## 主要技術
 - 言語：Golang 1.17
@@ -39,9 +41,8 @@
 - 不要なAPIコールを防ぐ手段として、APIから取得した試合情報は30秒間Redisで一時保持し、使い回すようにした。
     
 ## 苦労した点
-- Golangのプロジェクト構成に時間を費やした（参考書や参考サイトによって違うので迷った）。 
-- Golangのエラーハンドリングの構成に時間を費やした（こちらも参考書や参考サイトによって違い、現在進行形で見直し中）。
-- Redisの操作方法（セッション生成、破棄など）について記載されている日本語サイトがあまりなく、海外のコミュニティを参考にした。
+- Golangのエラーハンドリングの構成に時間を費やしている（現在進行形で見直し中）。
+- Redisの操作方法（セッション生成、破棄など）について掲載されているサイトが少なかった。
 - インフラ(AWS)やIaC（Terraform）の仕様理解に苦しむ。現在も試行錯誤中。
 
 ## 今後実装したい機能/実装中機能
@@ -52,3 +53,16 @@
 
 ## 今後実施したい取り組み
 - CI/CDパイプライン構築（CircleCI、またはGithubActionsを使用）
+
+## （参考）ポートフォリオのスクリーンショット
+
+
+<img width="1440" alt="portfolio_sample1" src="https://user-images.githubusercontent.com/77528519/211614837-3ed1f0f0-7d6c-4af4-880d-c94077936d21.png">
+
+<img width="1440" alt="portfolio_sample2" src="https://user-images.githubusercontent.com/77528519/211615026-f62b72ca-1134-43ea-ab18-ead0f4d3592c.png">
+
+<img width="1437" alt="portfolio_sample3" src="https://user-images.githubusercontent.com/77528519/211615091-ffcfb0aa-5934-43cc-8ed3-6b9c8387b38a.png">
+
+<img width="1440" alt="portfolio_sample4" src="https://user-images.githubusercontent.com/77528519/211615072-2b1bc199-cadf-4830-9466-4d5cec06971e.png">
+
+
