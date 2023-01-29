@@ -3,7 +3,9 @@ version: "3"
 services:
   db:
     container_name: football-db
-    image: mysql:8.0
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
     ports: 
       - 3306:3306
     networks:
@@ -26,12 +28,12 @@ services:
       - redis
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./docker/app/Dockerfile
     networks:
       - footballnet
     hostname: football-appserver
     ports:
-      - 8080:8080
+      - 80:80
     restart: always
     environment:
       FOOTBALL_DB_HOST: '${FOOTBALL_DB_HOST}'
@@ -47,7 +49,9 @@ services:
 
   redis: 
     container_name: football-redis
-    image: redis:latest
+    build:
+      context: .
+      dockerfile: ./docker/redis/Dockerfile
     ports:
       - 6379:6379
     networks:
