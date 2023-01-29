@@ -56,8 +56,11 @@
 ## 今後実施したい取り組み
 - CI/CDパイプライン構築（CircleCI、またはGithubActionsによる、自動デプロイ＆テスト）
 
-## （参考）ポートフォリオのスクリーンショット
+## （参考）インフラ構成図
 
+<img width="1440" alt="portfolio_infra_Diagram" src="https://user-images.githubusercontent.com/77528519/215331160-7895cb44-93fc-4a16-bc21-19616650d220.png">
+
+## （参考）ポートフォリオのスクリーンショット
 
 <img width="1440" alt="portfolio_sample1" src="https://user-images.githubusercontent.com/77528519/211614837-3ed1f0f0-7d6c-4af4-880d-c94077936d21.png">
 
