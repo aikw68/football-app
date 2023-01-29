@@ -17,7 +17,8 @@ var conn *redis.Client
 
 func init() {
 	conn = redis.NewClient(&redis.Options{
-		Addr:     "football-redis:6379",
+		// Addr:     "football-redis:6379",
+		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
