@@ -40,8 +40,8 @@ func Validation(r *http.Request) error {
 		r.FormValue("email"),
 		r.FormValue("password")}
 
-	var result util.AppErr
 	err = validate.Struct(*uip)
+
 	if err != nil {
 		errors := err.(validator.ValidationErrors)
 		if len(errors) != 0 {
@@ -50,20 +50,18 @@ func Validation(r *http.Request) error {
 				case "Email":
 					switch errors[i].Tag() {
 					case "required", "custom-email":
-						result = util.ERR_USER_EMAIL_INCORRECT_FORMAT
+						return util.ERR_USER_EMAIL_INCORRECT_FORMAT
 					}
 				case "Password":
 					switch errors[i].Tag() {
 					case "required", "custom-lowercase", "custom-uppercase", "custom-numeric":
-						result = util.ERR_USER_PASSWORD_INCORRECT_FORMAT
+						return util.ERR_USER_EMAIL_INCORRECT_FORMAT
 					}
 				}
 			}
 		}
-		return result
 	}
-	return result
-
+	return nil
 }
 
 // バリデーション（メールアドレス形式）

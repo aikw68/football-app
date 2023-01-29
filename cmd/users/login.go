@@ -31,14 +31,11 @@ func Signup(r *http.Request) (*User, error) {
 	// DB接続
 	db, err := util.DbConnect()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
 	}
 
 	// DBマイグレーション
-	query := db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
-	if query.Error() != "nil" {
-		return nil, errors.WithStack(util.ERR_USER_SYSTEM_ERROR)
-	}
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{}) // nolint
 
 	// メールアドレス二重登録チェック
 	db.Where("email = ?", email).First(&user)
