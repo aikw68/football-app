@@ -4,7 +4,7 @@
     - 試合情報はAPI（[football-data.org](https://www.football-data.org/)）を使い取得
 
 ## URL
-[https://duelscore.net/](https://duelscore.net/)
+~~[https://duelscore.net/](https://duelscore.net/)~~　※現在稼働停止中
 
 ## テストアカウント
 ヘッダー内「ログイン」から、下記情報でログイン可
